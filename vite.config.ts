@@ -12,11 +12,22 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
-  base: '/Portfolio/',
+
+  plugins: [
+    react(),
+    mode === "development" && componentTagger(),
+  ].filter(Boolean),
+
+  base: "/",   // ✅ IMPORTANT for Netlify root deployment
+
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+
+  build: {
+    outDir: "dist",
+    sourcemap: false,
   },
 }));
