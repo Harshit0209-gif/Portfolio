@@ -5,76 +5,76 @@
 @tailwind utilities;
 
 
-/* Premium Futuristic Portfolio Design System */
+/* "Graphite & Ember" Portfolio Design System */
 
 @layer base {
   :root {
-    /* Core dark theme - deep space aesthetic */
-    --background: 222 47% 5%;
-    --foreground: 210 40% 98%;
+    /* Core dark theme - warm graphite aesthetic */
+    --background: 20 9% 6%;
+    --foreground: 30 20% 94%;
 
     /* Card surfaces with glass-morphism feel */
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 98%;
-    --card-glass: 222 47% 10%;
+    --card: 20 9% 9%;
+    --card-foreground: 30 20% 94%;
+    --card-glass: 20 9% 11%;
 
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 20 9% 9%;
+    --popover-foreground: 30 20% 94%;
 
-    /* Electric cyan primary accent */
-    --primary: 180 100% 50%;
-    --primary-foreground: 222 47% 5%;
-    --primary-glow: 180 100% 60%;
+    /* Amber/ember primary accent */
+    --primary: 36 92% 56%;
+    --primary-foreground: 20 9% 6%;
+    --primary-glow: 36 100% 65%;
 
-    /* Violet secondary accent */
-    --secondary: 263 70% 58%;
-    --secondary-foreground: 210 40% 98%;
-    --secondary-glow: 263 80% 68%;
+    /* Rust/terracotta secondary accent */
+    --secondary: 14 75% 52%;
+    --secondary-foreground: 30 20% 94%;
+    --secondary-glow: 14 85% 60%;
 
     /* Muted surfaces */
-    --muted: 222 30% 12%;
-    --muted-foreground: 215 20% 55%;
+    --muted: 20 8% 14%;
+    --muted-foreground: 24 8% 62%;
 
     /* Accent variations */
-    --accent: 222 30% 15%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 20 8% 16%;
+    --accent-foreground: 30 20% 94%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 30 20% 94%;
 
-    --border: 222 30% 18%;
-    --input: 222 30% 15%;
-    --ring: 180 100% 50%;
+    --border: 20 8% 18%;
+    --input: 20 8% 16%;
+    --ring: 36 92% 56%;
 
     --radius: 0.75rem;
 
     /* Custom portfolio tokens */
-    --glow-primary: 0 0 40px hsl(180 100% 50% / 0.4);
-    --glow-secondary: 0 0 40px hsl(263 70% 58% / 0.3);
-    --glow-subtle: 0 0 60px hsl(180 100% 50% / 0.15);
-    
+    --glow-primary: 0 0 40px hsl(36 92% 56% / 0.4);
+    --glow-secondary: 0 0 40px hsl(14 75% 52% / 0.3);
+    --glow-subtle: 0 0 60px hsl(36 92% 56% / 0.15);
+
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(222 47% 5%) 0%, hsl(222 47% 8%) 50%, hsl(240 30% 10%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(222 47% 12% / 0.8) 0%, hsl(222 47% 8% / 0.6) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(180 100% 50%) 0%, hsl(263 70% 58%) 100%);
-    --gradient-text: linear-gradient(135deg, hsl(180 100% 60%) 0%, hsl(263 80% 68%) 100%);
-    
+    --gradient-hero: linear-gradient(135deg, hsl(20 9% 6%) 0%, hsl(20 9% 9%) 50%, hsl(14 20% 10%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(20 9% 13% / 0.8) 0%, hsl(20 9% 9% / 0.6) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(36 92% 56%) 0%, hsl(14 75% 52%) 100%);
+    --gradient-text: linear-gradient(135deg, hsl(36 100% 65%) 0%, hsl(14 85% 60%) 100%);
+
     /* Spacing rhythm */
     --section-padding: clamp(4rem, 10vw, 8rem);
-    
+
     /* Typography */
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'Inter', sans-serif;
 
     /* Sidebar - keeping for compatibility */
-    --sidebar-background: 222 47% 8%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 180 100% 50%;
-    --sidebar-primary-foreground: 222 47% 5%;
-    --sidebar-accent: 222 30% 15%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 222 30% 18%;
-    --sidebar-ring: 180 100% 50%;
+    --sidebar-background: 20 9% 9%;
+    --sidebar-foreground: 30 20% 94%;
+    --sidebar-primary: 36 92% 56%;
+    --sidebar-primary-foreground: 20 9% 6%;
+    --sidebar-accent: 20 8% 16%;
+    --sidebar-accent-foreground: 30 20% 94%;
+    --sidebar-border: 20 8% 18%;
+    --sidebar-ring: 36 92% 56%;
   }
 }
 
@@ -101,6 +101,22 @@
   ::selection {
     background: hsl(var(--primary) / 0.3);
     color: hsl(var(--foreground));
+  }
+
+  html.custom-cursor-active,
+  html.custom-cursor-active a,
+  html.custom-cursor-active button {
+    cursor: none;
+  }
+
+  .cursor-ring {
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .cursor-ring.cursor-active {
+    background: hsl(var(--foreground));
+    border-color: transparent;
+    mix-blend-mode: difference;
   }
 }
 
@@ -141,7 +157,7 @@
   .glow-button::before {
     content: '';
     @apply absolute inset-0 opacity-0 transition-opacity duration-300;
-    background: linear-gradient(135deg, hsl(180 100% 70%) 0%, hsl(263 80% 75%) 100%);
+    background: linear-gradient(135deg, hsl(36 100% 70%) 0%, hsl(14 85% 65%) 100%);
   }
 
   .glow-button:hover::before {
@@ -220,6 +236,63 @@
     box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
   }
 
+  /* Cursor-reactive/scroll-driven effect utilities */
+  .noise-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: noise-shift 1s steps(2) infinite;
+  }
+
+  @keyframes noise-shift {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(-1%, 1%); }
+    100% { transform: translate(1%, -1%); }
+  }
+
+  .scroll-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 60;
+    transform-origin: left;
+    background: var(--gradient-accent);
+  }
+
+  .split-text-word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+  }
+
+  .split-text-word > span {
+    display: inline-block;
+  }
+
+  .magnetic-target {
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto !important;
+    }
+
+    .noise-overlay,
+    .animate-float,
+    .glow-pulse,
+    .animate-slow-spin,
+    .animate-focus-in-expand {
+      animation: none !important;
+    }
+  }
+
   /* Skill badge */
   .skill-badge {
     @apply px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 border border-border;
@@ -266,10 +339,10 @@
 
   @keyframes glowPulse {
     0%, 100% {
-      box-shadow: 0 0 20px hsl(180 100% 50% / 0.3);
+      box-shadow: 0 0 20px hsl(36 92% 56% / 0.3);
     }
     50% {
-      box-shadow: 0 0 40px hsl(180 100% 50% / 0.5);
+      box-shadow: 0 0 40px hsl(36 92% 56% / 0.5);
     }
   }
 

@@ -42,7 +42,7 @@ function FloatingShapes() {
             {shape.type === 'icosahedron' && <icosahedronGeometry args={[1, 0]} />}
             {shape.type === 'tetrahedron' && <tetrahedronGeometry args={[1, 0]} />}
             <meshStandardMaterial
-              color={i % 2 === 0 ? '#00F0FF' : '#8B5CF6'}
+              color={i % 2 === 0 ? '#F5A623' : '#E0562A'}
               transparent
               opacity={0.15}
               wireframe
@@ -68,11 +68,11 @@ function Particles() {
       positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
       
-      // Cyan to violet gradient
+      // Amber to rust gradient
       const t = Math.random();
-      colors[i * 3] = t * 0.55 + (1 - t) * 0;
-      colors[i * 3 + 1] = t * 0.36 + (1 - t) * 0.94;
-      colors[i * 3 + 2] = t * 0.96 + (1 - t) * 1;
+      colors[i * 3] = t * 0.88 + (1 - t) * 0.965;
+      colors[i * 3 + 1] = t * 0.328 + (1 - t) * 0.641;
+      colors[i * 3 + 2] = t * 0.16 + (1 - t) * 0.155;
     }
     
     return { positions, colors };
@@ -121,10 +121,10 @@ export default function Scene3D() {
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true }}
       >
-        <color attach="background" args={['#080b14']} />
+        <color attach="background" args={['#100e0c']} />
         <ambientLight intensity={0.3} />
-        <pointLight position={[10, 10, 10]} intensity={0.5} color="#00F0FF" />
-        <pointLight position={[-10, -10, -10]} intensity={0.3} color="#8B5CF6" />
+        <pointLight position={[10, 10, 10]} intensity={0.5} color="#F5A623" />
+        <pointLight position={[-10, -10, -10]} intensity={0.3} color="#E0562A" />
         
         <FloatingShapes />
         <Particles />

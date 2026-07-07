@@ -1,13 +1,11 @@
-import { Github, Linkedin, Mail, Heart } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
+import MagneticButton from '@/components/effects/MagneticButton';
+import { contactInfo } from '@/data/experience';
 
 const socialLinks = [
-  { icon: Github, href: 'https://github.com/Harshit0209-gif', label: 'GitHub' },
-  {
-    icon: Linkedin,
-    href: 'https://www.linkedin.com/in/harshit-raj-963b99318/',
-    label: 'LinkedIn',
-  },
-  { icon: Mail, href: 'mailto:hello@example.com', label: 'Email' },
+  { icon: Github, href: contactInfo.github, label: 'GitHub' },
+  { icon: Linkedin, href: contactInfo.linkedin, label: 'LinkedIn' },
+  { icon: Mail, href: `mailto:${contactInfo.email}`, label: 'Email' },
 ];
 
 export default function Footer() {
@@ -21,7 +19,7 @@ export default function Footer() {
           {/* Logo & tagline */}
           <div className='text-center md:text-left'>
             <a
-              href='#'
+              href='#hero'
               className='font-display text-xl font-bold gradient-text'
             >
               Portfolio
@@ -34,16 +32,18 @@ export default function Footer() {
           {/* Social links */}
           <div className='flex items-center gap-4'>
             {socialLinks.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='p-2 rounded-full border border-border hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 group'
-                aria-label={social.label}
-              >
-                <social.icon className='w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors' />
-              </a>
+              <MagneticButton key={social.label}>
+                <a
+                  href={social.href}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='p-2 rounded-full border border-border hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 group'
+                  aria-label={social.label}
+                  data-cursor='social'
+                >
+                  <social.icon className='w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors' />
+                </a>
+              </MagneticButton>
             ))}
           </div>
         </div>
