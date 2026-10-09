@@ -2,32 +2,84 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Harshit's Portfolio</title>
-    <meta name="description" content="Harshit's Personal Portfolio" />
-    <meta name="author" content="Harshit" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Harshit Raj — Frontend Developer</title>
+    <meta
+      name="description"
+      content="Harshit Raj is a frontend developer who builds digital experiences where design, engineering and motion come together."
+    />
+    <meta name="author" content="Harshit Raj" />
+    <meta name="theme-color" content="#060A14" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <meta property="og:title" content="Harshit" />
-    <meta property="og:description" content="Harshit's Personal Portfolio" />
+    <meta property="og:title" content="Harshit Raj — Frontend Developer" />
+    <meta
+      property="og:description"
+      content="I don't just build interfaces. I build experiences. An interactive journey through my work."
+    />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
+    <meta property="og:image" content="/og-image.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-   <script>
+    <meta name="twitter:image" content="/og-image.jpg" />
+
+    <!-- Fonts are self-hosted (see public/fonts) and preloaded: no third-party requests, no late swap on the title. -->
+    <link rel="preload" href="/fonts/newsreader-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/schibsted-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- The opening photograph is the largest paint: fetch the right crop straight away. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      media="(max-aspect-ratio: 4/5)"
+      imagesrcset="/Hero/sunset-cabin-tall-720.avif 720w, /Hero/sunset-cabin-tall-1036.avif 1036w"
+      imagesizes="max(100vw, 110vh)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      media="not all and (max-aspect-ratio: 4/5)"
+      imagesrcset="/Hero/sunset-cabin-wide-1280.avif 1280w, /Hero/sunset-cabin-wide-1672.avif 1672w"
+      imagesizes="max(100vw, 178vh)"
+      fetchpriority="high"
+    />
+
+    <script>
+      // GitHub Pages SPA fallback: restore the path saved by 404.html.
       (function () {
-        const redirect = sessionStorage.redirect;
-        delete sessionStorage.redirect;
-        if (redirect && redirect !== location.href) {
-          history.replaceState(null, null, redirect);
-        }
+        try {
+          var redirect = sessionStorage.redirect;
+          delete sessionStorage.redirect;
+          if (redirect && redirect !== location.href) history.replaceState(null, '', redirect);
+        } catch (e) {}
+      })();
+
+      // Decide before first paint whether the opening sequence will play, so the
+      // hero never flashes in its final state and then snaps back to hidden.
+      (function () {
+        var root = document.documentElement;
+        try {
+          var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          var seen = sessionStorage.getItem('hr:intro-seen') === '1';
+          if (!reduced && !seen && !location.hash) root.classList.add('intro-pending');
+        } catch (e) {}
+        // Safety net: if the app is slow or fails to boot, show the content anyway.
+        setTimeout(function () {
+          root.classList.remove('intro-pending');
+        }, 7000);
       })();
     </script>
   </head>
 
   <body>
     <div id="root"></div>
+    <noscript>
+      <p style="padding: 2rem; font-family: Georgia, serif; color: #ece6da; background: #060a14">
+        Harshit Raj — Frontend Developer. This portfolio needs JavaScript. You can reach me at
+        harshitrajsingh142@gmail.com.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

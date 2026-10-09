@@ -1,165 +1,125 @@
-import { useRef } from 'react';
-import { Github, ArrowRight } from 'lucide-react';
-import { useGSAP } from '@gsap/react';
-import { gsap, ScrollTrigger } from '@/lib/gsap';
-import { useParallax } from '@/hooks/useParallax';
-import MagneticButton from '@/components/effects/MagneticButton';
-import SplitTextReveal from '@/components/effects/SplitTextReveal';
-import { projects, type Project } from '@/data/projects';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { projectBySlug, projects } from '@/content';
+import { useInView } from '@/hooks/useInView';
+import ChapterHeading from '@/components/experience/ChapterHeading';
+import ProjectWorld from '@/components/projects/ProjectWorld';
+import CaseStudyDialog from '@/components/projects/CaseStudyDialog';
 
-function ProjectRow({ project, index }: { project: Project; index: number }) {
-  const imageWrapRef = useRef<HTMLDivElement>(null);
-  const parallaxImgRef = useParallax<HTMLDivElement>({ speed: index % 2 === 0 ? 0.55 : -0.55 });
-  const reversed = index % 2 === 1;
+/** Which project world is currently in view — updates only when it changes. */
+function useCurrentProject() {
+  const [current, setCurrent] = useState(0);
 
-  useGSAP(() => {
-    if (!imageWrapRef.current) return;
-    const fromClip = reversed ? 'inset(0% 0% 0% 100%)' : 'inset(0% 100% 0% 0%)';
-
-    const trigger = ScrollTrigger.create({
-      trigger: imageWrapRef.current,
-      start: 'top 82%',
-      once: true,
-      onEnter: () => {
-        gsap.fromTo(
-          imageWrapRef.current,
-          { clipPath: fromClip },
-          {
-            clipPath: 'inset(0% 0% 0% 0%)',
-            duration: 1.1,
-            ease: 'power4.out',
-            onComplete: () =>
-              gsap.set(imageWrapRef.current, { clipPath: 'inset(0% 0% 0% 0%)' }),
-          }
-        );
+  useEffect(() => {
+    const worlds = projects.map((p) => document.getElementById(`project-${p.slug}`)).filter((el): el is HTMLElement => el !== null);
+    if (worlds.length === 0 || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setCurrent(worlds.indexOf(entry.target as HTMLElement));
+        });
       },
-    });
-
-    return () => trigger.kill();
+      // A thin band across the middle of the screen: whichever world crosses it is "current".
+      { rootMargin: '-50% 0px -49% 0px' }
+    );
+    worlds.forEach((w) => observer.observe(w));
+    return () => observer.disconnect();
   }, []);
 
-  return (
-    <div
-      className={`flex flex-col ${
-        reversed ? 'md:flex-row-reverse' : 'md:flex-row'
-      } items-center gap-10 md:gap-16 py-14 md:py-24 border-b border-border/50 last:border-0`}
-    >
-      <div
-        ref={imageWrapRef}
-        className='relative w-full md:w-3/5 h-64 sm:h-80 md:h-[440px] rounded-2xl overflow-hidden'
-      >
-        <div
-          ref={parallaxImgRef}
-          className='absolute -inset-y-[18%] inset-x-0 bg-cover bg-center'
-          style={{ backgroundImage: `url(${project.image})` }}
-        />
-        <div className='absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent' />
-        <div className='absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm opacity-0 hover:opacity-100 transition-opacity duration-300 group'>
-          <MagneticButton>
-            <a
-              href={project.github}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='p-4 rounded-full bg-foreground/10 hover:bg-primary/20 border border-border hover:border-primary/50 transition-all'
-              data-cursor='view'
-            >
-              <Github className='w-6 h-6' />
-            </a>
-          </MagneticButton>
-        </div>
-      </div>
-
-      <div className='relative w-full md:w-2/5'>
-        <span className='absolute -top-14 md:-top-20 left-0 text-[6rem] md:text-[9rem] font-display font-bold text-foreground/[0.05] leading-none select-none pointer-events-none'>
-          {String(index + 1).padStart(2, '0')}
-        </span>
-        <div className='relative'>
-          <h3 className='text-2xl md:text-3xl font-display font-bold mb-3'>
-            {project.title}
-          </h3>
-          <p className='text-muted-foreground mb-5'>{project.description}</p>
-          <div className='flex flex-wrap gap-2 mb-7'>
-            {project.tech.map((tech) => (
-              <span
-                key={tech}
-                className='px-3 py-1 text-xs rounded-full bg-muted text-muted-foreground border border-border/50'
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
-          <MagneticButton>
-            <a
-              href={project.github}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='outline-glow-button inline-flex items-center gap-2'
-              data-cursor='view'
-            >
-              <Github className='w-4 h-4' />
-              View on GitHub
-              <ArrowRight className='w-4 h-4' />
-            </a>
-          </MagneticButton>
-        </div>
-      </div>
-    </div>
-  );
+  return current;
 }
 
+const pad = (n: number) => String(n).padStart(2, '0');
+
+/**
+ * 04 — THE PROJECTS.
+ *
+ * Fourteen worlds, in the order the projects began. There is no featured tier: every
+ * project gets the same stage, the same sequence and the same depth of case study.
+ * A plain index at the top and a pager at the bottom keep every project one click away,
+ * with or without animation.
+ */
 export default function ProjectsSection() {
-  const glowA = useParallax<HTMLDivElement>({ speed: 0.5 });
-  const glowB = useParallax<HTMLDivElement>({ speed: -0.35 });
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
+  const current = useCurrentProject();
+  const openCaseStudy = useCallback((slug: string) => setOpenSlug(slug), []);
+  const closeCaseStudy = useCallback(() => setOpenSlug(null), []);
+
+  const worlds = useRef<HTMLDivElement>(null);
+  // "In the worlds" = the list of worlds overlaps the middle of the screen.
+  const inWorlds = useInView(worlds, { rootMargin: '-45% 0px -45% 0px' });
+
+  const prev = projects[current - 1];
+  const next = projects[current + 1];
 
   return (
-    <section
-      id='projects'
-      className='relative py-20 md:py-28 px-4 sm:px-6 max-w-6xl mx-auto overflow-hidden'
-    >
-      {/* Parallax decorative glows */}
-      <div
-        ref={glowA}
-        className='absolute -top-20 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none'
-      />
-      <div
-        ref={glowB}
-        className='absolute top-1/2 -right-32 w-[28rem] h-[28rem] bg-secondary/10 rounded-full blur-3xl pointer-events-none'
-      />
+    <section id='projects' className='relative bg-midnight' aria-labelledby='projects-title'>
+      <div className='mx-auto max-w-[1440px] px-[var(--gutter)] pb-[10vh] pt-[22vh]'>
+        <div className='grid gap-12 lg:grid-cols-12 lg:gap-10'>
+          <ChapterHeading chapter='projects' className='lg:col-span-6' />
 
-      <div className='relative'>
-        <div className='text-center mb-4'>
-          <SplitTextReveal
-            as='h2'
-            text='Selected Work'
-            className='section-title gradient-text mb-4'
-          />
-          <p className='section-subtitle mx-auto'>
-            Freelance projects showcasing my expertise in frontend development
-            and design
-          </p>
-        </div>
-
-        <div>
-          {projects.map((project, index) => (
-            <ProjectRow key={project.id} project={project} index={index} />
-          ))}
-        </div>
-
-        <div className='text-center mt-8'>
-          <MagneticButton>
-            <a
-              href='https://github.com/Harshit0209-gif'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='outline-glow-button inline-flex items-center gap-2'
-              data-cursor='view'
-            >
-              <Github className='w-4 h-4' />
-              View All on GitHub
-            </a>
-          </MagneticButton>
+          <nav className='lg:col-span-5 lg:col-start-8 lg:pt-12' aria-label='All projects'>
+            <ol className='border-t border-parchment/15 sm:columns-2 sm:gap-x-10'>
+              {projects.map((p, i) => (
+                <li key={p.slug} className='break-inside-avoid border-b border-parchment/10'>
+                  <a href={`#project-${p.slug}`} className='group flex items-baseline gap-4 py-2.5 transition-colors hover:text-champagne'>
+                    <span className='tabular w-6 shrink-0 text-xs text-parchment/60 group-hover:text-champagne'>{pad(i + 1)}</span>
+                    <span className='flex-1 text-[0.98rem] leading-snug'>{p.name}</span>
+                    <span className='tabular shrink-0 text-xs text-parchment/60'>{p.year}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
         </div>
       </div>
+
+      <div ref={worlds}>
+        {projects.map((project, i) => (
+          <ProjectWorld key={project.slug} project={project} flip={i % 2 === 1} onOpenCaseStudy={openCaseStudy} />
+        ))}
+      </div>
+
+      {/* Pager: sticks to the bottom of the screen for as long as this chapter is on it */}
+      <nav
+        className={`pointer-events-none sticky bottom-4 z-40 -mt-16 flex justify-center px-4 transition-opacity duration-300 ${inWorlds ? 'opacity-100' : 'invisible opacity-0'}`}
+        aria-label='Project pager'
+      >
+        <div className='pointer-events-auto flex items-center gap-1 rounded-full border border-parchment/15 bg-midnight/90 p-1 shadow-[0_18px_40px_-18px_rgba(0,0,0,.9)]'>
+          {prev ? (
+            <a href={`#project-${prev.slug}`} className='inline-flex h-10 w-10 items-center justify-center rounded-full text-parchment/80 transition-colors hover:bg-parchment/10 hover:text-champagne'>
+              <ChevronLeft className='h-4 w-4' aria-hidden='true' />
+              <span className='sr-only'>Previous project: {prev.name}</span>
+            </a>
+          ) : (
+            <span className='inline-flex h-10 w-10 items-center justify-center text-parchment/20' aria-hidden='true'>
+              <ChevronLeft className='h-4 w-4' />
+            </span>
+          )}
+
+          <a href='#projects' className='flex min-w-0 items-baseline gap-2.5 rounded-full px-2 py-1.5 text-sm transition-colors hover:text-champagne'>
+            <span className='tabular text-xs text-champagne'>
+              {pad(current + 1)}
+              <span className='text-parchment/60'> / {pad(projects.length)}</span>
+            </span>
+            <span className='max-w-[42vw] truncate font-medium sm:max-w-[18rem]'>{projects[current]?.name}</span>
+            <span className='sr-only'>— back to the list of all projects</span>
+          </a>
+
+          {next ? (
+            <a href={`#project-${next.slug}`} className='inline-flex h-10 w-10 items-center justify-center rounded-full text-parchment/80 transition-colors hover:bg-parchment/10 hover:text-champagne'>
+              <ChevronRight className='h-4 w-4' aria-hidden='true' />
+              <span className='sr-only'>Next project: {next.name}</span>
+            </a>
+          ) : (
+            <span className='inline-flex h-10 w-10 items-center justify-center text-parchment/20' aria-hidden='true'>
+              <ChevronRight className='h-4 w-4' />
+            </span>
+          )}
+        </div>
+      </nav>
+
+      <CaseStudyDialog project={openSlug ? (projectBySlug[openSlug] ?? null) : null} onClose={closeCaseStudy} />
     </section>
   );
 }
