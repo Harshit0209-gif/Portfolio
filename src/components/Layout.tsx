@@ -1,50 +1,29 @@
-import { lazy, Suspense } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import { useGSAP } from '@gsap/react';
-import { ScrollTrigger } from '@/lib/gsap';
-import Footer from '@/components/Footer';
-import Preloader from '@/components/effects/Preloader';
-import CustomCursor from '@/components/effects/CustomCursor';
-import ScrollProgress from '@/components/effects/ScrollProgress';
-import NoiseOverlay from '@/components/effects/NoiseOverlay';
+import { Outlet } from 'react-router-dom';
+import Navigation from '@/components/layout/Navigation';
+import ChapterRail from '@/components/layout/ChapterRail';
 import { useLenis } from '@/hooks/useLenis';
 
-// Lazy load the 3D scene for better performance
-const Scene3D = lazy(() => import('@/components/Scene3D'));
-
 export default function Layout() {
-  const { pathname } = useLocation();
-  const lenisRef = useLenis();
-
-  useGSAP(
-    () => {
-      lenisRef.current?.scrollTo(0, { immediate: true });
-      window.scrollTo(0, 0);
-      // Let the new page's content mount before measuring scroll distances.
-      const id = requestAnimationFrame(() => ScrollTrigger.refresh());
-      return () => cancelAnimationFrame(id);
-    },
-    { dependencies: [pathname] }
-  );
+  useLenis();
 
   return (
-    <main className='relative min-h-screen bg-background'>
-      <Preloader onComplete={() => {}} />
+    <>
+      <a
+        href='#main'
+        className='sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-champagne focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-midnight'
+      >
+        Skip to content
+      </a>
 
-      {/* 3D Background Scene */}
-      <Suspense fallback={null}>
-        <Scene3D />
-      </Suspense>
+      <Navigation />
+      <ChapterRail />
 
-      <NoiseOverlay />
-      <ScrollProgress />
-      <CustomCursor />
-
-      <div className='relative z-10'>
+      <main id='main' tabIndex={-1} className='relative outline-none'>
         <Outlet />
-      </div>
+      </main>
 
-      <Footer />
-    </main>
+      {/* Film grain: one static layer, no blend mode and no animation, so it costs nothing to scroll past. */}
+      <div className='grain' aria-hidden='true' />
+    </>
   );
 }
